@@ -1,0 +1,123 @@
+
+Sandracer est un petit jeu de course de vehicules rasant le sol. Ce jeu doit être le plus rapide possible à faire
+On veut bien définir le gamedesign avant de commencer à coder réellement
+
+1 - PHYSICS
+
+    1.a - présentation globale
+        
+        la physique est hyper importante parce que tous les déplacements de véhicules vont être basés dessus.
+        on doit donc la faire de manière simple et la plus réaliste possible.
+        on va créer un moteur physique spécifique afin de se libérer des contraintes de Unity.
+        la classe mère du moteur physique est PhysicsEngine
+        la classe mère des objets qui dépendent de ce moteur physique de course est PhysicalObject
+
+    1.b - PhysicsEngine
+
+        la classe PhysicsEngine est une classe abstraite qui gère la physique des déplacements de véhicules.
+
+        elle contient des variables :
+
+            - float timeStep : le pas de temps de la simulation
+            - List<PhysicalObject> objects : la liste des objets à mettre à jour
+            - float gravity : la gravité
+            - float drag : la résistance de l air
+
+        elle contient les méthodes suivantes :
+
+            - void Update() : met à jour la physique de tous les objets
+            - void AddObject(PhysicalObject obj) : ajoute un objet à la liste des objets à mettre à jour
+            - void RemoveObject(PhysicalObject obj) : retire un objet de la liste des objets à mettre à jour
+            - void AddForce(PhysicalObject obj, Vector3 force) : ajoute une force à un objet
+
+    1.c - PhysicalObject
+
+        Chaque PhysicalObject possède plusieurs variables physiques:
+            
+            - transform (position, rotation, scale) -> c est le centre de masse
+            - vitesse (vecteur de direction)
+            - acceleration
+            - masse (permet de calculer l inertie, la gravité, etc)
+            - collider (collider 3D)
+
+            (à définir plus tard)
+            - drag (résistance de l air)
+
+
+        1.c.1 - Engine
+
+            le moteur est un PhysicalObject qui possède une force de propulsion.
+            il possède une variable supplémentaire :
+
+                - float power : la puissance du moteur
+        
+    1.d - Link
+
+        le Link est un objet un peu spécial qui permet de relier deux PhysicalObject entre eux.
+        il possède ces variables :
+
+            - PhysicalObject obj1 : le premier objet relié
+            - Transform transform1 : la position du lien sur le premier objet (en local)
+            - PhysicalObject obj2 : le deuxième objet relié
+            - Transform transform2 : la position du lien sur le deuxième objet (en local)
+            - float stiffness : la rigidité du lien, plus elle est élevée plus le lien est rigide (se casse pas lors de chocs)
+            - float power_transfer : le pourcentage de transfert des forces entre les objets reliés (0 = aucun transfert, 1 = transfert total)
+
+
+2 - GESTION DU VEHICULE
+
+    2.a - présentation globale
+
+        un véhicule est composé de plusieurs PhysicalObject différents. pour avancer il faut au moins que
+        le véhicule soit composé d'un moteur, un ordinateur de bord & un réservoir d'essence.
+        l'une des scènes du jeu concerne la création de véhicules, et c'est ce qu'on va faire en premier.'
+    
+    2.b - scène création
+
+        on doit pouvoir créer un véhicule en placant les différents objets qu'on possède. (pour le moment on a tous les objets, plus tard non)'
+
+        écran séparé en deux fenetres :
+            - inventaire : liste des objets disponibles (2D)
+            - véhicule : véhicule en construction (3D)
+
+        shaders nécessaires :
+            - shader de contour (type dragonfief)
+            - shader de couleur (tout l'objet se teinte d'une couleur)
+
+        controles UX :
+
+            (main vide)
+            - hover sur objet de l'inventaire : grossis légèrement l'objet, affiche son nom
+            - hover sur objet du véhicule : shader contour de l objet hoveré en Jaune
+            - LMB (left mouse button) sur un objet de l'inventaire : met l'objet hoveré dans la main
+            - LMD (left mouse drag) sur la fenêtre véhicule : déplace la caméra
+
+            (main avec objet)
+            - RMB (right mouse button) : remet l'objet de la main dans l'inventaire
+            - RMD (right mouse drag) : fait pivoter la sélection sur elle meme
+            - RMD + X/Y/Z (+ CTRL) : fait pivoter la sélection sur elle meme selon l axe X/Y/Z (+ CTRL pour 45°)
+            - hover sur objet du véhicule : l'objet dans la main est attiré par l'objet hoveré -> raytracing pour trouver la position idéale
+            - LMB sur véhicule : 
+            - X/Y/Z : 
+
+3 - GESTION DES SCENES
+
+    3.a - présentation globale
+
+        le jeu est composé de plusieurs scènes différentes. on doit pouvoir naviguer entre ces scènes de manière fluide.
+        on doit pouvoir sauvegarder les scènes pour les recharger plus tard.
+
+    3.b - scène principale
+
+        la scène principale est la scène de jeu. elle contient les véhicules, les circuits, les décors, etc.
+        on doit pouvoir naviguer entre les différentes scènes de jeu.
+        (vue 3D, de dessus, type civilization)
+
+        contient plusieurs batiments :
+            - garage -> scène de création de véhicules
+            - circuit -> scène de course
+            - superette -> scène d achat
+
+    3.c - scène de création de véhicules
+
+        
